@@ -56,11 +56,6 @@ function init() {
 
     buttons.loadVideo.addEventListener('click', loadVideoFromInput);
 
-    buttons.sendMsg.addEventListener('click', sendChatMessage);
-    inputs.chat.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendChatMessage();
-    });
-
     buttons.copyLink.addEventListener('click', () => {
         const url = `${window.location.origin}${window.location.pathname}?room=${state.roomId}`;
         navigator.clipboard.writeText(url);
@@ -138,6 +133,22 @@ function init() {
         const seekTime = duration * percentage;
         state.player.seekTo(seekTime);
         updateRoomState({ timestamp: seekTime, status: 'playing' });
+    });
+
+    // Login Logic
+    document.getElementById('login-btn').addEventListener('click', () => {
+        document.getElementById('login-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('close-login-btn').addEventListener('click', () => {
+        document.getElementById('login-modal').classList.add('hidden');
+    });
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Login successful! (Demo mode)');
+        document.getElementById('login-modal').classList.add('hidden');
+        document.getElementById('login-btn').textContent = 'Account';
     });
 
     // Update progress bar loop
@@ -281,7 +292,6 @@ function renderMovies(category) {
             loadVideo(movie.videoId);
             enterMovieMode(); // Trigger Movie Mode
             updateRoomState({ videoId: movie.videoId, timestamp: 0, status: 'playing' });
-            addChatMessage('System', `Started watching: ${movie.title}`);
             document.getElementById('movie-browser-modal').classList.add('hidden');
         });
         grid.appendChild(card);
@@ -324,13 +334,7 @@ function joinRoom(roomId) {
         if (roomState.videoId) {
             loadVideo(roomState.videoId);
         }
-        // Load chat
-        if (roomState.chat) {
-            roomState.chat.forEach(msg => addChatMessage(msg.user, msg.text, false));
-        }
     }
-
-    addChatMessage('System', `You joined room ${roomId}`);
 }
 
 // Video Logic
@@ -340,7 +344,6 @@ function loadVideoFromInput() {
     if (videoId) {
         loadVideo(videoId);
         updateRoomState({ videoId: videoId, timestamp: 0, status: 'playing' });
-        addChatMessage('System', 'Loaded new video');
     } else {
         alert('Invalid YouTube URL');
     }
@@ -450,47 +453,13 @@ function handleStorageChange(e) {
             state.player.seekTo(newState.timestamp);
         }
     }
-
-    // Sync Chat (Check for new messages)
-    // In a real app, we'd append. Here we just reload if length changed.
-    // Ideally we store chat separately or handle it better.
-    // For this demo, we'll just check the last message.
-    if (newState.chat && newState.chat.length > 0) {
-        const lastMsg = newState.chat[newState.chat.length - 1];
-        // Simple check to avoid duplicates in UI (not robust but works for demo)
-        const lastUiMsg = displays.chatMessages.lastElementChild;
-        if (!lastUiMsg || lastUiMsg.textContent.indexOf(lastMsg.text) === -1) {
-            // Re-render all chat for simplicity in this storage-based demo
-            displays.chatMessages.innerHTML = '';
-            newState.chat.forEach(msg => addChatMessage(msg.user, msg.text, false));
-        }
-    }
 }
 
-// Chat Logic
-function sendChatMessage() {
-    const text = inputs.chat.value.trim();
-    if (!text) return;
+// Chat Logic Removed
+function sendChatMessage() { return; }
 
-    addChatMessage('You', text, true);
-    inputs.chat.value = '';
 
-    // Save to storage
-    const roomKey = `marathoon_room_${state.roomId}`;
-    const current = JSON.parse(localStorage.getItem(roomKey) || '{}');
-    const chat = current.chat || [];
-    chat.push({ user: state.username, text: text, time: Date.now() });
-
-    updateRoomState({ chat: chat });
-}
-
-function addChatMessage(user, text, isMe) {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'message';
-    msgDiv.innerHTML = `<span class="user" style="color: ${isMe ? 'var(--primary-color)' : 'var(--secondary-color)'}">${user}:</span> ${text}`;
-    displays.chatMessages.appendChild(msgDiv);
-    displays.chatMessages.scrollTop = displays.chatMessages.scrollHeight;
-}
+function addChatMessage() { return; }
 
 // Global API Ready function
 window.onYouTubeIframeAPIReady = function () {
