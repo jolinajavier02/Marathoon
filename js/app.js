@@ -119,9 +119,172 @@ function init() {
         });
     });
 
-    // Initialize Camera when joining room
-    document.querySelector('.tab-btn[data-tab="users"]').addEventListener('click', () => {
-        if (!localStream) startCamera();
+    // Custom Controls Listeners
+    document.getElementById('cc-play').addEventListener('click', togglePlay);
+    document.getElementById('cc-rewind').addEventListener('click', () => seekRelative(-10));
+    document.getElementById('cc-forward').addEventListener('click', () => seekRelative(10));
+    document.getElementById('cc-volume').addEventListener('click', toggleMute);
+    document.getElementById('volume-slider').addEventListener('input', (e) => setVolume(e.target.value));
+    document.getElementById('cc-fullscreen').addEventListener('click', toggleFullscreen);
+    document.getElementById('cc-exit').addEventListener('click', exitMovieMode);
+
+    // Progress Bar Interaction
+    document.getElementById('progress-container').addEventListener('click', (e) => {
+        if (!state.player) return;
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percentage = x / rect.width;
+        const duration = state.player.getDuration();
+        const seekTime = duration * percentage;
+        state.player.seekTo(seekTime);
+        updateRoomState({ timestamp: seekTime, status: 'playing' });
+    });
+
+    // Update progress bar loop
+    setInterval(updateProgressBar, 1000);
+}
+
+// ... (Previous Code) ...
+
+// Movie Mode Logic
+function enterMovieMode() {
+    document.body.classList.add('movie-active');
+    document.getElementById('custom-controls').classList.remove('hidden');
+    document.getElementById('standard-controls').style.display = 'none';
+
+    // Hide YT controls via playerVars update (requires reload usually, but we can just overlay)
+    // The overlay 'custom-controls' handles the UI.
+}
+
+function exitMovieMode() {
+    document.body.classList.remove('movie-active');
+    document.body.classList.remove('fullscreen-mode');
+    document.getElementById('custom-controls').classList.add('hidden');
+    document.getElementById('standard-controls').style.display = 'flex';
+
+    if (state.player) {
+        state.player.stopVideo();
+    }
+}
+
+// Custom Control Functions
+function togglePlay() {
+    if (!state.player) return;
+    const stateCode = state.player.getPlayerState();
+    if (stateCode === YT.PlayerState.PLAYING) {
+        state.player.pauseVideo();
+        updateRoomState({ status: 'paused', timestamp: state.player.getCurrentTime() });
+    } else {
+        state.player.playVideo();
+        updateRoomState({ status: 'playing', timestamp: state.player.getCurrentTime() });
+    }
+}
+
+function seekRelative(seconds) {
+    if (!state.player) return;
+    const current = state.player.getCurrentTime();
+    const newTime = current + seconds;
+    state.player.seekTo(newTime);
+    updateRoomState({ timestamp: newTime, status: 'playing' });
+}
+
+function toggleMute() {
+    if (!state.player) return;
+    if (state.player.isMuted()) {
+        state.player.unMute();
+        document.getElementById('cc-volume').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        document.getElementById('volume-slider').value = state.player.getVolume();
+    } else {
+        state.player.mute();
+        document.getElementById('cc-volume').innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+        document.getElementById('volume-slider').value = 0;
+    }
+}
+
+function setVolume(val) {
+    if (!state.player) return;
+    state.player.setVolume(val);
+    if (val > 0 && state.player.isMuted()) {
+        state.player.unMute();
+        document.getElementById('cc-volume').innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+    } else if (val == 0) {
+        document.getElementById('cc-volume').innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+    }
+}
+
+function toggleFullscreen() {
+    document.body.classList.toggle('fullscreen-mode');
+    const btn = document.getElementById('cc-fullscreen');
+    if (document.body.classList.contains('fullscreen-mode')) {
+        btn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+    } else {
+        btn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+    }
+}
+
+function updateProgressBar() {
+    if (!state.player || !state.player.getCurrentTime) return;
+
+    const current = state.player.getCurrentTime();
+    const duration = state.player.getDuration();
+
+    if (duration) {
+        const percent = (current / duration) * 100;
+        document.getElementById('progress-bar').style.width = `${percent}%`;
+
+        document.getElementById('current-time').textContent = formatTime(current);
+        document.getElementById('total-time').textContent = formatTime(duration);
+    }
+
+    // Update Play/Pause Icon based on state
+    const playBtn = document.getElementById('cc-play');
+    if (state.player.getPlayerState() === YT.PlayerState.PLAYING) {
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    } else {
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    }
+}
+
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// Update renderMovies to use enterMovieMode
+// We need to redefine renderMovies or update the event listener logic.
+// Since I can't easily redefine, I'll update the event listener logic in the next step or assume I can overwrite the previous function if I replace it.
+// Actually, I will just overwrite the renderMovies function below.
+
+function renderMovies(category) {
+    const grid = document.getElementById('movies-grid');
+    grid.innerHTML = '';
+
+    const filtered = category === 'all'
+        ? movieDatabase
+        : movieDatabase.filter(m => m.category === category);
+
+    filtered.forEach(movie => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.innerHTML = `
+            <img src="${movie.image}" class="movie-poster" alt="${movie.title}">
+            <div class="movie-info">
+                <div class="movie-title">${movie.title}</div>
+                <div class="movie-meta">
+                    <span class="movie-rating"><i class="fa-solid fa-star"></i> ${movie.rating}</span>
+                    <span>${movie.category === 'couples' ? '❤️' : movie.category === 'inspiring' ? '✨' : '🍿'}</span>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', () => {
+            loadVideo(movie.videoId);
+            enterMovieMode(); // Trigger Movie Mode
+            updateRoomState({ videoId: movie.videoId, timestamp: 0, status: 'playing' });
+            addChatMessage('System', `Started watching: ${movie.title}`);
+            document.getElementById('movie-browser-modal').classList.add('hidden');
+        });
+        grid.appendChild(card);
     });
 }
 
