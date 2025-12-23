@@ -11,7 +11,13 @@ const state = {
 // DOM Elements
 const views = {
     landing: document.getElementById('landing-view'),
+    home: document.getElementById('home-view'),
     room: document.getElementById('room-view')
+};
+
+const landingButtons = {
+    login: document.getElementById('landing-login-btn'),
+    guest: document.getElementById('landing-guest-btn')
 };
 
 const inputs = {
@@ -45,6 +51,22 @@ function init() {
 
     if (roomCode) {
         joinRoom(roomCode);
+    } else {
+        renderHomeMovies();
+    }
+
+    // Landing Page Listeners
+    if (landingButtons.login) {
+        landingButtons.login.addEventListener('click', () => {
+            document.getElementById('login-modal').classList.remove('hidden');
+        });
+    }
+
+    if (landingButtons.guest) {
+        landingButtons.guest.addEventListener('click', () => {
+            state.username = 'Guest_' + Math.floor(Math.random() * 1000);
+            showHomeView();
+        });
     }
 
     // Event Listeners
@@ -146,9 +168,16 @@ function init() {
 
     document.getElementById('login-form').addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Login successful! (Demo mode)');
+        // Simulate Login
+        const email = document.querySelector('#login-form input[type="email"]').value;
+        state.username = email.split('@')[0]; // Use email prefix as username
+
+        alert(`Welcome back, ${state.username}!`);
         document.getElementById('login-modal').classList.add('hidden');
-        document.getElementById('login-btn').textContent = 'Account';
+        document.getElementById('login-btn').textContent = state.username;
+
+        // Switch to Home View
+        showHomeView();
     });
 
     // Update progress bar loop
@@ -642,3 +671,47 @@ function filterMovies(query) {
 
 // Start
 init();
+
+function showHomeView() {
+    views.landing.classList.add('hidden');
+    views.home.classList.remove('hidden');
+    state.currentView = 'home';
+}
+
+function renderHomeMovies() {
+    const grid = document.getElementById('home-movies-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    // Show top 6 movies
+    movieDatabase.slice(0, 6).forEach(movie => {
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.innerHTML = `
+            <img src="${movie.image}" class="movie-poster" alt="${movie.title}">
+            <div class="movie-info">
+                <div class="movie-title">${movie.title}</div>
+            </div>
+        `;
+        card.addEventListener('click', () => {
+            createRoomWithMovie(movie.videoId);
+        });
+        grid.appendChild(card);
+    });
+}
+
+function createRoomWithMovie(videoId) {
+    const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    state.isHost = true;
+    
+    // Pre-set video in local storage for the new room
+    const roomKey = `marathoon_room_${newRoomId}`;
+    localStorage.setItem(roomKey, JSON.stringify({
+        videoId: videoId,
+        status: 'playing',
+        timestamp: 0,
+        lastUpdate: Date.now()
+    }));
+    
+    joinRoom(newRoomId);
+}

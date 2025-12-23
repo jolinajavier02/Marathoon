@@ -29,34 +29,42 @@
         </nav>
 
         <!-- Landing Section -->
+        <!-- Landing View (Initial) -->
         <section id="landing-view" class="view active">
-            <div class="hero-content">
-                <h1>Watch Together,<br><span class="gradient-text">Miles Apart.</span></h1>
-                <p>Stream your favorite movies and videos in perfect sync with friends, family, and loved ones. No
-                    sign-up required.</p>
-
-                <div class="action-box">
-                    <button id="create-room-btn" class="btn-primary large">
-                        <i class="fa-solid fa-plus"></i> Create Room
-                    </button>
-                    <div class="divider"><span>OR</span></div>
-                    <div class="join-room-container">
-                        <input type="text" id="room-code-input" placeholder="Enter Room Code">
-                        <button id="join-room-btn" class="btn-secondary">Join</button>
-                    </div>
+            <div class="hero-content centered">
+                <h1 class="animate-title">Cinema<span class="highlight">Sync</span></h1>
+                <p class="animate-subtitle">Experience movies together, miles apart.</p>
+                <div class="cta-group">
+                    <button id="landing-login-btn" class="btn-primary large">Login to Start</button>
+                    <button id="landing-guest-btn" class="btn-secondary large">Continue as Guest</button>
                 </div>
             </div>
-            <div class="hero-visual">
-                <!-- Abstract visual or placeholder for 3D element -->
-                <div class="floating-card card-1">
-                    <i class="fa-brands fa-youtube"></i>
-                    <span>YouTube</span>
+            <div class="hero-bg-overlay"></div>
+        </section>
+
+        <!-- Home View (Post-Login) -->
+        <section id="home-view" class="view hidden">
+            <div class="home-container">
+                <div class="action-panel">
+                    <h2>Ready to Watch?</h2>
+                    <div class="room-controls">
+                        <button id="create-room-btn" class="btn-primary">
+                            <i class="fa-solid fa-plus"></i> Create Room
+                        </button>
+                        <div class="divider"><span>OR</span></div>
+                        <div class="join-input-group">
+                            <input type="text" id="room-code-input" placeholder="Enter Room Code">
+                            <button id="join-room-btn" class="btn-secondary">Join</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="floating-card card-2">
-                    <i class="fa-solid fa-video"></i>
-                    <span>Direct Video</span>
+
+                <div class="movies-preview-section">
+                    <h3>Trending Now</h3>
+                    <div class="movies-preview-grid" id="home-movies-grid">
+                        <!-- Movies injected via JS -->
+                    </div>
                 </div>
-                <div class="circle-bg"></div>
             </div>
         </section>
 
