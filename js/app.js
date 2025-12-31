@@ -5,7 +5,8 @@ const state = {
     username: 'Guest_' + Math.floor(Math.random() * 1000),
     player: null,
     isHost: false,
-    lastSyncTime: 0
+    lastSyncTime: 0,
+    isGenericPlayer: false
 };
 
 // DOM Elements
@@ -189,7 +190,11 @@ function init() {
 // Movie Mode Logic
 function enterMovieMode() {
     document.body.classList.add('movie-active');
-    document.getElementById('custom-controls').classList.remove('hidden');
+    if (!state.isGenericPlayer) {
+        document.getElementById('custom-controls').classList.remove('hidden');
+    } else {
+        document.getElementById('custom-controls').classList.add('hidden');
+    }
     document.getElementById('standard-controls').style.display = 'none';
 
     // Hide YT controls via playerVars update (requires reload usually, but we can just overlay)
@@ -387,6 +392,27 @@ function extractVideoID(url) {
 function loadVideo(videoId) {
     displays.playerPlaceholder.style.display = 'none';
 
+    // Check if it's a URL (Generic Player)
+    if (videoId.includes('http') || videoId.includes('vidsrc')) {
+        state.isGenericPlayer = true;
+        if (state.player && typeof state.player.stopVideo === 'function') {
+            state.player.stopVideo();
+        }
+        document.getElementById('youtube-player').style.display = 'none';
+        document.getElementById('generic-player').classList.remove('hidden');
+        document.getElementById('generic-iframe').src = videoId;
+        
+        // Hide custom controls if they were visible
+        document.getElementById('custom-controls').classList.add('hidden');
+        return;
+    }
+
+    // YouTube Logic
+    state.isGenericPlayer = false;
+    document.getElementById('generic-player').classList.add('hidden');
+    document.getElementById('generic-iframe').src = '';
+    document.getElementById('youtube-player').style.display = 'block';
+
     if (typeof YT === 'undefined' || !YT.Player) {
         alert('YouTube API is still loading. Please wait a moment and try again.');
         return;
@@ -533,6 +559,14 @@ function toggleMic() {
 
 // Movie Database (Mock)
 const movieDatabase = [
+    {
+        id: 'new1',
+        title: 'Eternity',
+        category: 'entertainment',
+        image: 'https://placehold.co/500x750?text=Eternity',
+        rating: 'N/A',
+        videoId: 'https://vidsrc.to/embed/movie/tt3110210'
+    },
     {
         id: 'couple1',
         title: 'The Notebook',
