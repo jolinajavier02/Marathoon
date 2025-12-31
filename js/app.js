@@ -334,6 +334,7 @@ function joinRoom(roomId) {
     views.landing.classList.add('hidden');
     views.home.classList.add('hidden');
     views.room.classList.remove('hidden');
+    document.body.classList.add('room-active');
     displays.roomCode.textContent = roomId;
 
     // Initialize Room State in LocalStorage if not exists
