@@ -31,7 +31,7 @@ const buttons = {
     joinRoom: document.getElementById('join-room-btn'),
     loadVideo: document.getElementById('load-video-btn'),
     sendMsg: document.getElementById('send-msg-btn'),
-    copyLink: document.getElementById('copy-link-btn'),
+    invite: document.getElementById('invite-btn'),
     sync: document.getElementById('sync-btn')
 };
 
@@ -74,10 +74,14 @@ function init() {
 
     buttons.loadVideo.addEventListener('click', loadVideoFromInput);
 
-    buttons.copyLink.addEventListener('click', () => {
+    buttons.invite.addEventListener('click', () => {
         const url = `${window.location.origin}${window.location.pathname}?room=${state.roomId}`;
         navigator.clipboard.writeText(url);
-        alert('Room link copied to clipboard!');
+        const originalText = buttons.invite.innerHTML;
+        buttons.invite.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        setTimeout(() => {
+            buttons.invite.innerHTML = originalText;
+        }, 2000);
     });
 
     buttons.sync.addEventListener('click', () => {
@@ -353,13 +357,19 @@ function joinRoom(roomId) {
 
 // Video Logic
 function loadVideoFromInput() {
-    const url = inputs.videoUrl.value;
+    const url = inputs.videoUrl.value.trim();
+    if (!url) return;
+
     const videoId = extractVideoID(url);
     if (videoId) {
         loadVideo(videoId);
         updateRoomState({ videoId: videoId, timestamp: 0, status: 'playing' });
+    } else if (url.startsWith('http')) {
+        // Assume generic video URL
+        loadVideo(url);
+        updateRoomState({ videoId: url, timestamp: 0, status: 'playing' });
     } else {
-        alert('Invalid YouTube URL');
+        alert('Invalid URL. Please enter a valid YouTube or Video link.');
     }
 }
 
