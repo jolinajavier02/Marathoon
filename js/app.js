@@ -535,14 +535,7 @@ function toggleMic() {
 
 // Movie Database (Mock)
 const movieDatabase = [
-    {
-        id: 'new1',
-        title: 'Eternity',
-        category: 'entertainment',
-        image: 'https://placehold.co/500x750/6366f1/ffffff?text=Eternity+(2025)',
-        rating: 'N/A',
-        videoId: 'https://vidsrc.to/embed/movie/tt3110210'
-    },
+
     {
         id: 'couple1',
         title: 'The Notebook',
