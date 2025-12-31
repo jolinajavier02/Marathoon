@@ -24,7 +24,6 @@
             <div class="nav-links">
                 <a href="#" class="active">Home</a>
                 <a href="#">Features</a>
-                <button id="login-btn" class="btn-secondary">Login</button>
             </div>
         </nav>
 
@@ -35,8 +34,7 @@
                 <h1 class="animate-title">Cinema<span class="highlight">Sync</span></h1>
                 <p class="animate-subtitle">Experience movies together, miles apart.</p>
                 <div class="cta-group">
-                    <button id="landing-login-btn" class="btn-primary large">Login to Start</button>
-                    <button id="landing-guest-btn" class="btn-secondary large">Continue as Guest</button>
+                    <button id="landing-guest-btn" class="btn-primary large">Start Watching</button>
                 </div>
             </div>
             <div class="hero-bg-overlay"></div>
@@ -81,8 +79,10 @@
                             </div>
                         </div>
                         <div id="youtube-player"></div>
-                        <div id="generic-player" class="hidden" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
-                            <iframe id="generic-iframe" src="" frameborder="0" allowfullscreen style="width: 100%; height: 100%;"></iframe>
+                        <div id="generic-player" class="hidden"
+                            style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
+                            <iframe id="generic-iframe" src="" frameborder="0" allowfullscreen
+                                style="width: 100%; height: 100%;"></iframe>
                         </div>
 
                         <!-- Custom Controls Overlay (Visible in Movie Mode) -->
@@ -193,28 +193,7 @@
             </div>
         </div>
 
-        <!-- Login Modal -->
-        <div id="login-modal" class="modal hidden">
-            <div class="modal-content small-modal">
-                <div class="modal-header">
-                    <h2>Login</h2>
-                    <button class="close-modal-btn" id="close-login-btn"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="modal-body">
-                    <form id="login-form">
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" placeholder="Enter your email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" placeholder="Enter your password" required>
-                        </div>
-                        <button type="submit" class="btn-primary full-width">Login</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+
 
     </div>
 

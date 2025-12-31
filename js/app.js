@@ -17,7 +17,6 @@ const views = {
 };
 
 const landingButtons = {
-    login: document.getElementById('landing-login-btn'),
     guest: document.getElementById('landing-guest-btn')
 };
 
@@ -57,11 +56,7 @@ function init() {
     }
 
     // Landing Page Listeners
-    if (landingButtons.login) {
-        landingButtons.login.addEventListener('click', () => {
-            document.getElementById('login-modal').classList.remove('hidden');
-        });
-    }
+
 
     if (landingButtons.guest) {
         landingButtons.guest.addEventListener('click', () => {
@@ -159,27 +154,7 @@ function init() {
     });
 
     // Login Logic
-    document.getElementById('login-btn').addEventListener('click', () => {
-        document.getElementById('login-modal').classList.remove('hidden');
-    });
 
-    document.getElementById('close-login-btn').addEventListener('click', () => {
-        document.getElementById('login-modal').classList.add('hidden');
-    });
-
-    document.getElementById('login-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Simulate Login
-        const email = document.querySelector('#login-form input[type="email"]').value;
-        state.username = email.split('@')[0]; // Use email prefix as username
-
-        alert(`Welcome back, ${state.username}!`);
-        document.getElementById('login-modal').classList.add('hidden');
-        document.getElementById('login-btn').textContent = state.username;
-
-        // Switch to Home View
-        showHomeView();
-    });
 
     // Update progress bar loop
     setInterval(updateProgressBar, 1000);
@@ -349,6 +324,7 @@ function joinRoom(roomId) {
 
     // Update UI
     views.landing.classList.add('hidden');
+    views.home.classList.add('hidden');
     views.room.classList.remove('hidden');
     displays.roomCode.textContent = roomId;
 
@@ -401,7 +377,7 @@ function loadVideo(videoId) {
         document.getElementById('youtube-player').style.display = 'none';
         document.getElementById('generic-player').classList.remove('hidden');
         document.getElementById('generic-iframe').src = videoId;
-        
+
         // Hide custom controls if they were visible
         document.getElementById('custom-controls').classList.add('hidden');
         return;
@@ -563,7 +539,7 @@ const movieDatabase = [
         id: 'new1',
         title: 'Eternity',
         category: 'entertainment',
-        image: 'https://placehold.co/500x750?text=Eternity',
+        image: 'https://placehold.co/500x750/6366f1/ffffff?text=Eternity+(2025)',
         rating: 'N/A',
         videoId: 'https://vidsrc.to/embed/movie/tt3110210'
     },
@@ -716,7 +692,7 @@ function renderHomeMovies() {
     const grid = document.getElementById('home-movies-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    
+
     // Show top 6 movies
     movieDatabase.slice(0, 6).forEach(movie => {
         const card = document.createElement('div');
@@ -737,7 +713,7 @@ function renderHomeMovies() {
 function createRoomWithMovie(videoId) {
     const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
     state.isHost = true;
-    
+
     // Pre-set video in local storage for the new room
     const roomKey = `marathoon_room_${newRoomId}`;
     localStorage.setItem(roomKey, JSON.stringify({
@@ -746,6 +722,6 @@ function createRoomWithMovie(videoId) {
         timestamp: 0,
         lastUpdate: Date.now()
     }));
-    
+
     joinRoom(newRoomId);
 }
