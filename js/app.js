@@ -320,7 +320,11 @@ function joinRoom(roomId) {
 
     // Update URL without reload
     const newUrl = `${window.location.pathname}?room=${roomId}`;
-    window.history.pushState({ path: newUrl }, '', newUrl);
+    try {
+        window.history.pushState({ path: newUrl }, '', newUrl);
+    } catch (e) {
+        console.log('PushState failed (likely due to file:// protocol):', e);
+    }
 
     // Update UI
     views.landing.classList.add('hidden');

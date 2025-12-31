@@ -284,9 +284,9 @@ body {
 /* Room View */
 #room-view {
     padding-top: 80px;
-    /* Space for navbar */
     height: 100vh;
     overflow: hidden;
+    background-color: #000;
 }
 
 .room-container {
@@ -312,6 +312,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
 }
 
 #player-placeholder {
@@ -335,6 +337,7 @@ body {
     padding: 1rem 0;
     display: flex;
     gap: 1rem;
+    background: #000;
 }
 
 .input-group {
@@ -356,8 +359,8 @@ body {
 /* Sidebar */
 .sidebar {
     width: 350px;
-    background: var(--surface-color);
-    border-left: 1px solid var(--border-color);
+    background: #111;
+    border-left: 1px solid #333;
     display: flex;
     flex-direction: column;
 }
