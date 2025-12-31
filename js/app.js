@@ -51,8 +51,6 @@ function init() {
 
     if (roomCode) {
         joinRoom(roomCode);
-    } else {
-        renderHomeMovies();
     }
 
     // Landing Page Listeners
@@ -61,7 +59,7 @@ function init() {
     if (landingButtons.guest) {
         landingButtons.guest.addEventListener('click', () => {
             state.username = 'Guest_' + Math.floor(Math.random() * 1000);
-            showHomeView();
+            createRoom();
         });
     }
 
@@ -331,8 +329,9 @@ function joinRoom(roomId) {
     }
 
     // Update UI
+    // Update UI
     views.landing.classList.add('hidden');
-    views.home.classList.add('hidden');
+    // views.home.classList.add('hidden'); // Home view removed
     views.room.classList.remove('hidden');
     document.body.classList.add('room-active');
     displays.roomCode.textContent = roomId;
@@ -690,32 +689,10 @@ function filterMovies(query) {
 // Start
 init();
 
-function showHomeView() {
-    views.landing.classList.add('hidden');
-    views.home.classList.remove('hidden');
-    state.currentView = 'home';
-}
-
-function renderHomeMovies() {
-    const grid = document.getElementById('home-movies-grid');
-    if (!grid) return;
-    grid.innerHTML = '';
-
-    // Show top 6 movies
-    movieDatabase.slice(0, 6).forEach(movie => {
-        const card = document.createElement('div');
-        card.className = 'movie-card';
-        card.innerHTML = `
-            <img src="${movie.image}" class="movie-poster" alt="${movie.title}">
-            <div class="movie-info">
-                <div class="movie-title">${movie.title}</div>
-            </div>
-        `;
-        card.addEventListener('click', () => {
-            createRoomWithMovie(movie.videoId);
-        });
-        grid.appendChild(card);
-    });
+function createRoom() {
+    const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    state.isHost = true;
+    joinRoom(newRoomId);
 }
 
 function createRoomWithMovie(videoId) {
@@ -724,6 +701,7 @@ function createRoomWithMovie(videoId) {
 
     // Pre-set video in local storage for the new room
     const roomKey = `marathoon_room_${newRoomId}`;
+    const movie = movieDatabase.find(m => m.videoId === videoId);
     localStorage.setItem(roomKey, JSON.stringify({
         videoId: videoId,
         status: 'playing',
@@ -732,4 +710,5 @@ function createRoomWithMovie(videoId) {
     }));
 
     joinRoom(newRoomId);
+}
 }
