@@ -59,7 +59,7 @@ function init() {
     if (landingButtons.guest) {
         landingButtons.guest.addEventListener('click', () => {
             state.username = 'Guest_' + Math.floor(Math.random() * 1000);
-            createRoom();
+            showHomeView();
         });
     }
 
@@ -331,7 +331,7 @@ function joinRoom(roomId) {
     // Update UI
     // Update UI
     views.landing.classList.add('hidden');
-    // views.home.classList.add('hidden'); // Home view removed
+    views.home.classList.add('hidden');
     views.room.classList.remove('hidden');
     document.body.classList.add('room-active');
     displays.roomCode.textContent = roomId;
@@ -688,6 +688,12 @@ function filterMovies(query) {
 
 // Start
 init();
+
+function showHomeView() {
+    views.landing.classList.add('hidden');
+    views.home.classList.remove('hidden');
+    state.currentView = 'home';
+}
 
 function createRoom() {
     const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
