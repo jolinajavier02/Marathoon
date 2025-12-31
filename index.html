@@ -123,6 +123,23 @@
                             <button id="sync-btn" title="Resync"><i class="fa-solid fa-rotate"></i></button>
                         </div>
                     </div>
+
+                    <!-- Video Chat Section Moved Here -->
+                    <div class="video-chat-container">
+                        <div class="video-grid" id="video-grid">
+                            <div class="video-feed local">
+                                <video id="local-video" autoplay muted playsinline></video>
+                                <div class="user-label">You</div>
+                                <div class="video-controls-overlay">
+                                    <button id="toggle-mic" class="control-btn"><i
+                                            class="fa-solid fa-microphone"></i></button>
+                                    <button id="toggle-cam" class="control-btn"><i
+                                            class="fa-solid fa-video"></i></button>
+                                </div>
+                            </div>
+                            <!-- Remote users will be added here dynamically -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="sidebar">
@@ -138,22 +155,7 @@
                     </div>
 
                     <div class="tab-content active" id="users-tab">
-                        <!-- Video Chat Section -->
-                        <div class="video-chat-container">
-                            <div class="video-grid" id="video-grid">
-                                <div class="video-feed local">
-                                    <video id="local-video" autoplay muted playsinline></video>
-                                    <div class="user-label">You</div>
-                                    <div class="video-controls-overlay">
-                                        <button id="toggle-mic" class="control-btn"><i
-                                                class="fa-solid fa-microphone"></i></button>
-                                        <button id="toggle-cam" class="control-btn"><i
-                                                class="fa-solid fa-video"></i></button>
-                                    </div>
-                                </div>
-                                <!-- Remote users will be added here dynamically -->
-                            </div>
-                        </div>
+
 
                         <ul class="user-list" id="user-list">
                             <li class="user-item me">
